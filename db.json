@@ -23,14 +23,6 @@
       "year": 2016,
       "quantity": "8",
       "imageURL": "/assets/arathrae.jpeg"
-    },
-    {
-      "id": 4,
-      "title": "W∀RP",
-      "description": "A time-space anomaly folds matter from different points in earth's history in on itself, sending six unlikely heroes on a race against time as worlds literally collide.",
-      "year": 2010,
-      "quantity": "4",
-      "imageURL": "/assets/warp.jpeg"
     }
   ]
 }
