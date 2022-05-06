@@ -1,8 +1,10 @@
-async function getBooks() {
+async function main() {
   let response = await fetch("http://localhost:3001/listBooks");
   let books = await response.json();
-  
-  books.forEach((book) => {
+
+  books.forEach(renderBook)
+
+  function renderBook(book) {
     let newBook = document.createElement("div");
     let bookTitle = document.createElement("h4");
     let quantityInputBox = document.createElement("input");
@@ -19,7 +21,7 @@ async function getBooks() {
     bookTitle.textContent = book.title;
     newBook.append(bookTitle, quantityInputBox, submitNewQuantity, deleteBook);
     document.body.append(newBook);
-  });
+  }
 
   let submitButtons = document.querySelectorAll(".submit");
   let deleteButtons = document.querySelectorAll(".delete");
@@ -32,7 +34,8 @@ async function getBooks() {
     button.addEventListener("click", deleteBook);
   });
 
-  async function updateBookQuantity() {
+
+  function updateBookQuantity() {
     let inputAreaForSpecificBook;
     let specificBookObject;
     inputAreas.forEach((inputArea) => {
@@ -52,7 +55,7 @@ async function getBooks() {
     });
     console.log(specificBookObject);
 
-    await fetch("http://localhost:3001/updateBook", {
+    fetch("http://localhost:3001/updateBook", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -68,7 +71,7 @@ async function getBooks() {
     });
   }
 
-async function deleteBook() {
+  function deleteBook() {
     let specificBookObject;
     books.forEach(book => {
         if (book.title === this.getAttribute("data-button-for")){
@@ -76,23 +79,87 @@ async function deleteBook() {
         }
         })
     
-    await fetch(`http://localhost:3001/removeBook/${specificBookObject.id}`, {
+    
+   fetch(`http://localhost:3001/removeBook/${specificBookObject.id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
       })
-    response = await fetch("http://localhost:3001/listBooks");
-    books = await response.json();
-    
+    console.log(books)
     const bookItems = [...document.querySelectorAll('div')]
-    bookItems.forEach(book => console.log(book))
+    bookItems.forEach(book => {
+      console.log(book)
+      if (book.firstChild.textContent === specificBookObject.title) {
+        book.remove()
+      }
+    }
+      )
     
     
     }
-    
-    
+
+
+  const myForm = document.getElementById('myForm')
+  myForm.addEventListener('submit', handleForm)
+  function handleForm(ev) {
+    ev.preventDefault(); //stop the page reloading
+    //console.dir(ev.target);
+    let myForm = ev.target;
+    let fd = new FormData(myForm);
   
+    //add more things that were not in the form
+    fd.append('year', new Date().getFullYear());
+    fd.append('quantity', 3);
+  
+    //look at all the contents
+    let json = convertFD2JSON(fd);
+  
+    console.log(json)
+    // let h = new Headers();
+    // h.append('Content-type', 'application/json');
+    // fetch('http://localhost:3001/addBook' , {
+    //   method: 'POST',
+    //   headers: h,
+    //   body: json
+    // }).catch(console.warn)
+  
+  // }
+    //send the request with the formdata
+    let url = 'http://localhost:3001/addBook';
+    let h = new Headers();
+    h.append('Content-type', 'application/json');
+  
+    let req = new Request(url, {
+      headers: h,
+      body: json,
+      method: 'POST',
+    });
+    //console.log(req);
+    fetch(req)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('Response from server');
+        console.log(data);
+      })
+      .catch(console.warn);
+  
+  
+      function convertFD2JSON(formData) {
+        let obj = {};
+        for (let key of formData.keys()) {
+          obj[key] = formData.get(key);
+        }
+        return JSON.stringify(obj);
+      }  
+  }
 }
-// Your Code Here
-getBooks();
+
+
+
+  
+
+main()
+
+
+
